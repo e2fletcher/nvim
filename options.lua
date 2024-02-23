@@ -1,3 +1,4 @@
+vim.cmd("let $PATH = '" .. "/home/ender/.local/share/fnm/node-versions/v20.10.0/installation/bin" .. ":' . $PATH")
 -- set vim options here (vim.<first_key>.<second_key> = value)
 return {
   opt = {
@@ -5,8 +6,11 @@ return {
     relativenumber = true, -- sets vim.opt.relativenumber
     number = true, -- sets vim.opt.number
     spell = false, -- sets vim.opt.spell
+    spelllang = { "es", "en_us" },
     signcolumn = "auto", -- sets vim.opt.signcolumn to auto
-    wrap = false, -- sets vim.opt.wrap
+    wrap = true, -- sets vim.opt.wrap
+    swapfile = true,
+    guifont = "Intel_One_Mono_Medium:h14:#e-subpixelantialias:#h-none",
   },
   g = {
     mapleader = " ", -- sets vim.g.mapleader
@@ -15,8 +19,9 @@ return {
     autopairs_enabled = true, -- enable autopairs at start
     diagnostics_mode = 3, -- set the visibility of diagnostics in the UI (0=off, 1=only show in status line, 2=virtual text off, 3=all on)
     icons_enabled = true, -- disable icons in the UI (disable if no nerd font is available, requires :PackerSync after changing)
-    ui_notifications_enabled = false, -- disable notifications when toggling UI elements
-    resession_enabled = false, -- enable experimental resession.nvim session management (will be default in AstroNvim v4)
+    ui_notifications_enabled = true, -- disable notifications when toggling UI elements
+    resession_enabled = true, -- enable experimental resession.nvim session management (will be default in AstroNvim v4)
+    node_host_prog = "~/.local/share/fnm/node-versions/v20.10.0/installation/bin/node",
   },
 }
 -- If you need more control, you can use the function()...end notation

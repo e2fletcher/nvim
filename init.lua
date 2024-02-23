@@ -18,7 +18,8 @@ return {
   },
 
   -- Set colorscheme to use
-  colorscheme = "catppuccin-mocha",
+  -- colorscheme = "tokyonight-moon",
+  colorscheme = "catppuccin-macchiato",
 
   -- Diagnostics configuration (for vim.diagnostics.config({...})) when diagnostics are on
   diagnostics = {
@@ -27,6 +28,13 @@ return {
   },
 
   lsp = {
+    config = {
+      tailwindcss = function(opts)
+        opts.root_dir =
+          require("lspconfig.util").root_pattern { "tailwind.config.ts", "tailwind.config.js", "tailwind.config.mjs" }
+        return opts
+      end,
+    },
     -- customize lsp formatting options
     formatting = {
       -- control auto formatting on save
@@ -51,6 +59,7 @@ return {
     -- enable servers that you already have installed without mason
     servers = {
       -- "pyright"
+      --
     },
   },
 
@@ -69,6 +78,17 @@ return {
   -- augroups/autocommands and custom filetypes also this just pure lua so
   -- anything that doesn't fit in the normal config locations above can go here
   polish = function()
+    -- close some filetypes with <q>
+    vim.api.nvim_create_autocmd("FileType", {
+      pattern = {
+        "fugitive",
+        "git",
+      },
+      callback = function(event)
+        vim.bo[event.buf].buflisted = false
+        vim.keymap.set("n", "q", "<cmd>close<cr>", { buffer = event.buf, silent = true })
+      end,
+    })
     -- Set up custom filetypes
     -- vim.filetype.add {
     --   extension = {
@@ -82,4 +102,45 @@ return {
     --   },
     -- }
   end,
+
+  -- Debuggers
+  -- dap = {
+  --   adapters = {
+  --     ["pwa-node"] = {
+  --       type = "server",
+  --       host = "localhost",
+  --       port = "${port}",
+  --       executable = {
+  --         command = "node",
+  --         args = {
+  --           -- Not working mason-registry not fount
+  --           -- require("mason-registry").get_package("js-debug-adapter"):get_install_path()
+  --           "/home/ender/.local/share/nvim/mason/packages/js-debug-adapter"
+  --             .. "/js-debug/src/dapDebugServer.js",
+  --           "${port}",
+  --         },
+  --       },
+  --     },
+  --   },
+  --   configurations = {
+  --     typescript = {
+  --       {
+  --         type = "pwa-node",
+  --         request = "launch",
+  --         name = "Launch file (node with ts-node)",
+  --         cwd = vim.fn.getcwd(),
+  --         runtimeArgs = { "--loader", "ts-node/esm" },
+  --         runtimeExecutable = "node",
+  --         args = { "${file}" },
+  --         sourceMaps = true,
+  --         protocol = "inspector",
+  --         skipFiles = { "<node_internals>/**", "node_modules/**" },
+  --         resolveSourceMapLocations = {
+  --           "${workspaceFolder}/**",
+  --           "!**/node_modules/**",
+  --         },
+  --       },
+  --     },
+  --   },
+  -- },
 }

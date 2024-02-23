@@ -1,26 +1,21 @@
+local utils = require "astronvim.utils"
 return {
-  { "folke/tokyonight.nvim" },
-  {
-    "machakann/vim-sandwich",
-    keys = {
-      { "sa", desc = "Add surrounding", mode = { "n", "v" } },
-      { "sd", desc = "Delete surrounding" },
-      { "sr", desc = "Replace surrounding" },
-    },
-  },
+  { "folke/tokyonight.nvim", lazy = false },
   {
     "catppuccin/nvim",
     optional = true,
     opts = {
       integrations = {
         alpha = false,
+        lsp_trouble = true,
+        notify = true,
         dashboard = false,
         flash = false,
         nvimtree = false,
         ts_rainbow = false,
         ts_rainbow2 = false,
         barbecue = false,
-        indent_blankline = false,
+        indent_blankline = true,
         navic = false,
         dropbar = false,
         aerial = true,
@@ -32,20 +27,15 @@ return {
         noice = true,
         semantic_tokens = true,
         symbols_outline = true,
+        treesitter_context = true,
         telescope = { enabled = true, style = "nvchad" },
         which_key = true,
         sandwich = true,
       },
     },
   },
-  -- You can also add new plugins here as well:
-  -- Add plugins, the lazy syntax
-  -- "andweeb/presence.nvim",
-  -- {
-  --   "ray-x/lsp_signature.nvim",
-  --   event = "BufRead",
-  --   config = function()
-  --     require("lsp_signature").setup()
-  --   end,
-  -- },
+  {
+    "tpope/vim-fugitive",
+    cmd = { "G", "Git", "Gdiff" },
+  },
 }

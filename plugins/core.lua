@@ -1,5 +1,80 @@
+local utils = require "astronvim.utils"
+local get_icon = utils.get_icon
+
 return {
-{ "goolord/alpha-nvim", enabled = false },
+  {
+    "goolord/alpha-nvim",
+    opts = function(_, opts) -- override the options using lazy.nvim
+      opts.section.header.val = { -- change the header section value
+        "                       _           ",
+        " _ __   ___  _____   _(_)_ __ ___  ",
+        "| '_ \\ / _ \\/ _ \\ \\ / / | '_ ` _ \\ ",
+        "| | | |  __/ (_) \\ V /| | | | | | |",
+        "|_| |_|\\___|\\___/ \\_/ |_|_| |_| |_|",
+      }
+    end,
+  },
+  {
+    "rebelot/heirline.nvim",
+    opts = function(_, opts)
+      local status = require "astronvim.utils.status"
+
+      opts.statusline = { -- statusline
+        hl = { fg = "fg", bg = "bg" },
+        status.component.mode { mode_text = { padding = { left = 1, right = 1 } } }, -- add the mode text
+        status.component.git_branch(),
+        status.component.file_info { filetype = {}, filename = false, file_modified = false },
+        status.component.git_diff(),
+        status.component.diagnostics(),
+        status.component.fill(),
+        status.component.cmd_info(),
+        status.component.fill(),
+        status.component.lsp(),
+        status.component.treesitter(),
+        status.component.nav(),
+        -- remove the 2nd mode indicator on the right
+      }
+
+      return opts
+    end,
+  },
+  { -- override nvim-cmp plugin
+    "hrsh7th/nvim-cmp",
+    dependencies = {
+      "hrsh7th/cmp-emoji", -- add cmp source as dependency of cmp
+      {
+        "tzachar/cmp-tabnine",
+        build = "./install.sh",
+      },
+      "f3fora/cmp-spell",
+    },
+    -- override the options table that is used in the `require("cmp").setup()` call
+    opts = function(_, opts)
+      -- opts parameter is the default options table
+      -- the function is lazy loaded so cmp is able to be required
+      local cmp = require "cmp"
+      -- modify the sources part of the options table
+      opts.sources = cmp.config.sources {
+        {
+          name = "spell",
+          priority = 1000,
+          option = {
+            keep_all_entries = false,
+            enable_in_context = function() return require("cmp.config.context").in_treesitter_capture "spell" end,
+          },
+        },
+        { name = "cmp_tabnine", priority = 900 }, -- add new source
+        { name = "nvim_lsp", priority = 800 }, -- 1000
+        { name = "luasnip", priority = 750 },
+        { name = "buffer", priority = 500 },
+        { name = "emoji", priority = 300 },
+        { name = "path", priority = 250 },
+      }
+
+      -- return the new table to be used
+      return opts
+    end,
+  },
   -- customize alpha options
   -- You can disable default plugins as follows:
   -- { "max397574/better-escape.nvim", enabled = false },
@@ -44,15 +119,15 @@ return {
   --   end,
   -- },
   -- By adding to the which-key config and using our helper function you can add more which-key registered bindings
-  -- {
-  --   "folke/which-key.nvim",
-  --   config = function(plugin, opts)
-  --     require "plugins.configs.which-key"(plugin, opts) -- include the default astronvim config that calls the setup call
-  --     -- Add bindings which show up as group name
-  --     local wk = require "which-key"
-  --     wk.register({
-  --       b = { name = "Buffer" },
-  --     }, { mode = "n", prefix = "<leader>" })
-  --   end,
-  -- },
+  {
+    "folke/which-key.nvim",
+    config = function(plugin, opts)
+      require "plugins.configs.which-key"(plugin, opts) -- include the default astronvim config that calls the setup call
+      -- Add bindings which show up as group name
+      local wk = require "which-key"
+      wk.register({
+        r = { name = get_icon("Search", 1, true) .. "Requests" },
+      }, { mode = "n", prefix = "<leader>" })
+    end,
+  },
 }

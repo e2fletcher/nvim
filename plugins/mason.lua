@@ -1,4 +1,7 @@
+---@diagnostic disable: unused-local
 -- customize mason plugins
+local utils = require "astronvim.utils"
+
 return {
   -- use mason-lspconfig to configure LSP installations
   {
@@ -7,7 +10,7 @@ return {
     opts = function(_, opts)
       -- add more things to the ensure_installed table protecting against community packs modifying it
       opts.ensure_installed = require("astronvim.utils").list_insert_unique(opts.ensure_installed, {
-        -- "lua_ls",
+        "phpactor",
       })
     end,
   },
@@ -20,6 +23,7 @@ return {
       opts.ensure_installed = require("astronvim.utils").list_insert_unique(opts.ensure_installed, {
         -- "prettier",
         -- "stylua",
+        "php-cs-fixer",
       })
     end,
   },
@@ -27,10 +31,30 @@ return {
     "jay-babu/mason-nvim-dap.nvim",
     -- overrides `require("mason-nvim-dap").setup(...)`
     opts = function(_, opts)
+      local dap = require "dap"
       -- add more things to the ensure_installed table protecting against community packs modifying it
       opts.ensure_installed = require("astronvim.utils").list_insert_unique(opts.ensure_installed, {
         -- "python",
       })
+      opts.handlers = {
+        php = function(source_name)
+          dap.adapters.php = {
+            type = "executable",
+            command = vim.fn.exepath "php-debug-adapter",
+          }
+          dap.configurations.php = {
+            {
+              type = "php",
+              request = "launch",
+              name = "Laravel",
+              port = 9003,
+              pathMappings = {
+                ["/var/www/html"] = "${workspaceFolder}",
+              },
+            },
+          }
+        end,
+      }
     end,
   },
 }

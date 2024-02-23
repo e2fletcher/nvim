@@ -11,6 +11,8 @@ return {
     optional = true,
     config = function()
       local dap = require "dap"
+
+      -- Node.js adapter
       dap.adapters["pwa-node"] = {
         type = "server",
         host = "localhost",
@@ -25,48 +27,37 @@ return {
         },
       }
 
-      dap.adapters["chrome"] = {
-        type = "executable",
-        executable = {
-          command = "node",
-          args = {
-            require("mason-registry").get_package("vscode-chrome-debug"):get_install_path()
-              .. "/out/src/chromeDebug.js",
-          },
-        },
-      }
+      -- Chrome adapter
+      -- dap.adapters["chrome"] = {
+      --   type = "executable",
+      --   executable = {
+      --     command = "node",
+      --     args = {
+      --       require("mason-registry").get_package("chrome-debug-adapter"):get_install_path()
+      --         .. "/out/src/chromeDebug.js",
+      --     },
+      --   },
+      -- }
 
-      local js_config = {
+      local node = {
         {
           type = "pwa-node",
           request = "launch",
-          name = "Launch file",
+          name = "Launch file (node)",
           program = "${file}",
-          sourceMaps = true,
-          skipFiles = { "<node_internals>/**" },
           cwd = "${workspaceFolder}",
-          resolveSourceMapLocations = {
-            "${workspaceFolder}/**",
-            "!**/node_modules/**",
-          },
         },
         {
           type = "pwa-node",
           request = "attach",
-          name = "Attach",
+          name = "Attach process (node)",
           processId = require("dap.utils").pick_process,
-          sourceMaps = true,
-          skipFiles = { "<node_internals>/**" },
           cwd = "${workspaceFolder}",
-          resolveSourceMapLocations = {
-            "${workspaceFolder}/**",
-            "!**/node_modules/**",
-          },
         },
         {
           type = "pwa-node",
           request = "launch",
-          name = "Launch Current File (pwa-node with ts-node)",
+          name = "Launch file (node with ts-node)",
           cwd = vim.fn.getcwd(),
           runtimeArgs = { "--loader", "ts-node/esm" },
           runtimeExecutable = "node",
@@ -81,36 +72,38 @@ return {
         },
       }
 
-      local js_config_chrome = {
-        name = "Debug (Attach) - Remote",
-        type = "chrome",
-        request = "attach",
-        -- program = "${file}",
-        -- cwd = vim.fn.getcwd(),
-        sourceMaps = true,
-        --      reAttach = true,
-        trace = true,
-        -- protocol = "inspector",
-        -- hostName = "127.0.0.1",
-        port = 9222,
-        webRoot = "${workspaceFolder}",
-      }
+      -- local configs_chrome = {
+      --   {
+      --     type = "chrome",
+      --     request = "attach",
+      --     name = "Attach chrome remote",
+      --     -- program = "${file}",
+      --     -- cwd = vim.fn.getcwd(),
+      --     sourceMaps = true,
+      --     --      reAttach = true,
+      --     trace = true,
+      --     -- protocol = "inspector",
+      --     -- hostName = "127.0.0.1",
+      --     port = 9222,
+      --     webRoot = "${workspaceFolder}",
+      --   },
+      -- }
 
       for _, language in ipairs { "typescript", "javascript" } do
         if not dap.configurations[language] then
-          dap.configurations[language] = js_config
+          dap.configurations[language] = node
         else
-          utils.extend_tbl(dap.configurations[language], js_config)
+          utils.extend_tbl(dap.configurations[language], node)
         end
       end
 
-      for _, language in ipairs { "typescriptreact", "javascriptreact" } do
-        if not dap.configurations[language] then
-          dap.configurations[language] = js_config_chrome
-        else
-          utils.extend_tbl(dap.configurations[language], js_config_chrome)
-        end
-      end
+      -- for _, language in ipairs { "typescriptreact", "javascriptreact" } do
+      --   if not dap.configurations[language] then
+      --     dap.configurations[language] = configs_chrome
+      --   else
+      --     utils.extend_tbl(dap.configurations[language], configs_chrome)
+      --   end
+      -- end
     end,
   },
 }

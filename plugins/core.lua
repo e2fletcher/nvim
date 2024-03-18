@@ -63,8 +63,8 @@ return {
             enable_in_context = function() return require("cmp.config.context").in_treesitter_capture "spell" end,
           },
         },
+        { name = "nvim_lsp", priority = 1000 }, -- 1000
         { name = "cmp_tabnine", priority = 900 }, -- add new source
-        { name = "nvim_lsp", priority = 800 }, -- 1000
         { name = "luasnip", priority = 750 },
         { name = "buffer", priority = 500 },
         { name = "emoji", priority = 300 },

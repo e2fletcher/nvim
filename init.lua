@@ -83,6 +83,7 @@ return {
       pattern = {
         "fugitive",
         "git",
+        "dap.log",
       },
       callback = function(event)
         vim.bo[event.buf].buflisted = false

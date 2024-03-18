@@ -10,7 +10,6 @@ return {
     signcolumn = "auto", -- sets vim.opt.signcolumn to auto
     wrap = true, -- sets vim.opt.wrap
     swapfile = true,
-    guifont = "Intel_One_Mono_Medium:h14:#e-subpixelantialias:#h-none",
   },
   g = {
     mapleader = " ", -- sets vim.g.mapleader

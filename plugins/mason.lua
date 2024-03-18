@@ -40,6 +40,7 @@ return {
         php = function(source_name)
           dap.adapters.php = {
             type = "executable",
+            ---@diagnostic disable-next-line: undefined-global
             command = vim.fn.exepath "php-debug-adapter",
           }
           dap.configurations.php = {

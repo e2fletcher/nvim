@@ -82,23 +82,6 @@ lspconfig.yamlls.setup {
   settings = { yaml = { schemaStore = { enable = false, url = "" } } },
 }
 
-vim.g.rustaceanvim = {
-  tools = {},
-  server = {
-    default_settings = {
-      ["rust-analyzer"] = {
-        check = {
-          command = "clippy",
-          extraArgs = {
-            "--no-deps",
-          },
-        },
-      },
-    },
-  },
-  dap = {},
-}
-
 -- Python
 
 require("lspconfig").basedpyright.setup {

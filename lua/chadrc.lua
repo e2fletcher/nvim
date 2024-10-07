@@ -110,7 +110,7 @@ M.lsp = {
 }
 
 M.base46 = {
-  theme = "melange",
+  theme = "flexoki-light",
   hl_add = {
     FlashLabel = {
       bg = "baby_pink",

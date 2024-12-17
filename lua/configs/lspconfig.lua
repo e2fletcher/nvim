@@ -15,9 +15,7 @@ local on_attach = function(_, bufnr)
   map("n", "<leader>lr", function()
     require "nvchad.lsp.renamer"()
   end, opts "Rename current symbol")
-
-  map("n", "<leader>la", require("fastaction").code_action, opts "LSP Code action")
-  map("v", "<leader>la", require("fastaction").range_code_action, opts "LSP Code action")
+  map({ "n", "v" }, "<leader>la", vim.lsp.buf.code_action, opts "Code action")
   map("n", "gr", vim.lsp.buf.references, opts "Show references")
 end
 
@@ -131,9 +129,26 @@ require("lspconfig").vtsls.setup {
 }
 
 require("lspconfig").eslint.setup {
-  on_attach = on_attach,
+  on_attach = function(client, bufnr)
+    on_attach(client, bufnr)
+    vim.api.nvim_create_autocmd("BufWritePre", {
+      buffer = bufnr,
+      callback = function(event)
+        if vim.g.disable_autoformat or vim.b[event.buf].disable_autoformat then
+          return
+        end
+        vim.cmd "EslintFixAll"
+      end,
+    })
+  end,
   on_init = on_init,
   capabilities = capabilities,
+  settings = {
+    eslint = {
+      workingDirectories = { mode = "auto" },
+      format = { enable = true },
+    },
+  },
 }
 
 require("lspconfig").html.setup {
@@ -185,6 +200,50 @@ require("lspconfig").basedpyright.setup {
           reportOptionalSubscript = "none",
           reportPrivateImportUsage = "none",
         },
+      },
+    },
+  },
+}
+
+require("lspconfig").tailwindcss.setup {
+  on_attach = on_attach,
+  capabilities = capabilities,
+  root_dir = function(fname)
+    local root_pattern = require("lspconfig").util.root_pattern(
+      "tailwind.config.mjs",
+      "tailwind.config.cjs",
+      "tailwind.config.js",
+      "tailwind.config.ts",
+      "postcss.config.js",
+      "config/tailwind.config.js",
+      "assets/tailwind.config.js"
+    )
+    return root_pattern(fname)
+  end,
+}
+
+require("lspconfig").emmet_ls.setup {
+  on_attach = on_attach,
+  capabilities = capabilities,
+  filetypes = {
+    "css",
+    "eruby",
+    "html",
+    "javascript",
+    "javascriptreact",
+    "less",
+    "sass",
+    "scss",
+    "svelte",
+    "pug",
+    "typescriptreact",
+    "vue",
+  },
+  init_options = {
+    html = {
+      options = {
+        -- For possible options, see: https://github.com/emmetio/emmet/blob/master/src/config.ts#L79-L267
+        ["bem.enabled"] = true,
       },
     },
   },

@@ -4,6 +4,12 @@ map("n", "<leader>th", function()
   require("nvchad.themes").open()
 end, { desc = "change theme" })
 
+map({ "n", "x", "o" }, "H", "^")
+map({ "n", "x", "o" }, "L", "$")
+
+map("n", "<Tab>", "<Cmd>bn!<CR>", { desc = "next buffer" })
+map("n", "<S-Tab>", "<Cmd>bp!<CR>", { desc = "previous buffer" })
+
 map("n", "-", function()
   local files = require "mini.files"
   if not files.close() then
@@ -17,7 +23,11 @@ map("n", "<leader>c", function()
 end, { desc = "Close buffer" })
 
 map({ "n", "t" }, "<c-space>", function()
-  require("nvchad.term").toggle { pos = "sp", id = "horizontalTerm" }
+  require("nvchad.term").toggle { pos = "float", id = "floatingTerm" }
+end)
+
+map({ "n", "t" }, "<F4>", function()
+  require("nvchad.term").toggle { pos = "float", id = "floatingTerm" }
 end)
 
 map("n", "<Esc>", "<cmd>noh<CR>", { desc = "general clear highlights" })
@@ -32,7 +42,7 @@ map(
 map("n", "<leader>fb", "<cmd>Telescope buffers<cr>", { desc = "find buffers" })
 map("n", "<leader>fp", "<cmd>Telescope projects<cr>", { desc = "find projects" })
 map("n", "<leader>ft", "<cmd>Telescope terms<CR>", { desc = "telescope show terms" })
-map("n", "<leader>fw", "<cmd>Telescope grep_string word_to_search=true<cr>", { desc = "Find word in files" })
+map("n", "<leader>fW", "<cmd>Telescope grep_string word_to_search=true<cr>", { desc = "Find word in files" })
 
 -- resize windows
 map({ "n", "t" }, "<c-left>", require("smart-splits").resize_left)
@@ -51,7 +61,16 @@ end, { desc = "general format file" })
 
 map("n", "<leader>gg", "<cmd>Git<cr>", { desc = "Git" })
 map("n", "<leader>hh", require("gitsigns").preview_hunk_inline, { desc = "Preview hunk" })
-map("n", "<leader>gd", "<cmd>Gvdiffsplit<cr>", { desc = "Git diff" })
+map("n", "<leader>gs", ":Gitsigns stage_hunk<CR>")
+map("v", "<leadergs", ":Gitsigns stage_hunk<CR>")
+map("n", "<leader>gr", ":Gitsigns reset_hunk<CR>")
+map("v", "<leader>gr", ":Gitsigns reset_hunk<CR>")
+map("n", "<leader>gS", "<cmd>Gitsigns stage_buffer<CR>")
+map("n", "<leader>gu", "<cmd>Gitsigns undo_stage_hunk<CR>")
+map("n", "<leader>gR", "<cmd>Gitsigns reset_buffer<CR>")
+map("n", "<leader>gp", "<cmd>Gitsigns preview_hunk<CR>")
+map("n", "<leader>gD", "<cmd>Gitsigns diffthis<CR>")
+map("n", "<leader>gd", '<cmd>lua require"gitsigns".diffthis("~")<CR>')
 map("n", "<leader>gb", "<cmd>Telescope git_branches<cr>", { desc = "Git branches" })
 map("t", "<esc>", "<C-\\><C-n>", { desc = "terminal escape terminal mode" })
 

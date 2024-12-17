@@ -30,13 +30,13 @@ vim.api.nvim_create_autocmd("FileType", {
 return {
   formatters_by_ft = {
     lua = { "stylua" },
-    css = { "prettierd" },
-    json = { "prettierd" },
-    html = { "prettierd" },
-    typescript = { "prettierd" },
-    javascript = { "prettierd" },
-    typescriptreact = { "prettierd" },
-    javascriptreact = { "prettierd" },
+    css = { "eslint", "prettierd", "prettier", stop_after_first = true },
+    json = { "eslint", "prettierd", "prettier", stop_after_first = true },
+    html = { "eslint", "prettierd", "prettier", stop_after_first = true },
+    typescript = { "eslint", "prettierd", "prettier", stop_after_first = true },
+    javascript = { "eslint", "prettierd", "prettier", stop_after_first = true },
+    typescriptreact = { "eslint", "prettierd", "prettier", stop_after_first = true },
+    javascriptreact = { "eslint", "prettierd", "prettier", stop_after_first = true },
   },
   format_on_save = function(bufnr)
     if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then

@@ -58,3 +58,11 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.keymap.set("n", "q", vim.cmd.close, { desc = "close the current buffer", buffer = true })
   end,
 })
+
+-- vim.cmd [[
+-- "autocmd BufEnter * call system("tmux rename-window " . expand("%:t"))
+-- "autocmd BufEnter * call system("tmux rename-window " . require('pleanary').path:new(vim.api.nvim_buf_get_name(0)):make_relative())
+-- "autocmd VimLeave * call system("tmux rename-window bash")
+-- "autocmd BufEnter * let &titlestring = ' ' . expand("%:t")
+-- "set title
+-- ]]

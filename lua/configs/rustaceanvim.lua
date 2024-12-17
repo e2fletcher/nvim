@@ -1,3 +1,5 @@
+require("nvchad.lsp").diagnostic_config()
+
 vim.g.rustaceanvim = {
   -- Plugin configuration
   tools = {
@@ -15,3 +17,5 @@ vim.g.rustaceanvim = {
   -- DAP configuration
   dap = {},
 }
+
+vim.g.rustaceanvim.tools.float_win_config.border = "solid"

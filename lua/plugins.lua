@@ -13,6 +13,10 @@ return {
     end,
   },
   "nvchad/volt", -- optional, needed for theme switcher
+  {
+    "nvzone/minty",
+    cmd = { "Shades", "Huefy" },
+  },
 
   {
     "neovim/nvim-lspconfig",
@@ -28,6 +32,7 @@ return {
 
   {
     "nvim-treesitter/nvim-treesitter",
+    dependencies = { "nvim-treesitter/nvim-treesitter-textobjects" },
     event = { "BufReadPost", "BufNewFile" },
     config = function()
       local opts = require "configs.treesitter"
@@ -95,6 +100,7 @@ return {
     "hrsh7th/nvim-cmp",
     event = "InsertEnter",
     dependencies = {
+      -- { "js-everts/cmp-tailwind-colors", opts = {} },
       {
         "L3MON4D3/LuaSnip",
         dependencies = {
@@ -199,6 +205,7 @@ return {
 
   {
     "folke/trouble.nvim",
+    event = "VeryLazy",
     cmd = { "TroubleToggle", "Trouble" },
     opts = function()
       return require "configs.trouble"
@@ -220,13 +227,6 @@ return {
     "stevearc/dressing.nvim",
     event = "VeryLazy",
     opts = {},
-  },
-
-  {
-    "Chaitanyabsprip/fastaction.nvim",
-    opts = function()
-      return require "configs.fastaction"
-    end,
   },
 
   {
@@ -337,6 +337,18 @@ return {
     config = function()
       local opts = require "configs.diffview"
       require("diffview").setup(opts)
+    end,
+  },
+  {
+    "utilyre/barbecue.nvim",
+    event = "VeryLazy",
+    version = "*",
+    dependencies = {
+      "SmiteshP/nvim-navic",
+      "nvim-tree/nvim-web-devicons", -- optional dependency
+    },
+    config = function()
+      require "configs.barbecue"
     end,
   },
 }

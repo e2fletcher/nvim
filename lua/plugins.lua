@@ -13,6 +13,10 @@ return {
     end,
   },
   "nvchad/volt", -- optional, needed for theme switcher
+  {
+    "nvzone/minty",
+    cmd = { "Shades", "Huefy" },
+  },
 
   {
     "neovim/nvim-lspconfig",
@@ -28,6 +32,7 @@ return {
 
   {
     "nvim-treesitter/nvim-treesitter",
+    dependencies = { "nvim-treesitter/nvim-treesitter-textobjects" },
     event = { "BufReadPost", "BufNewFile" },
     config = function()
       local opts = require "configs.treesitter"
@@ -166,7 +171,7 @@ return {
 
   {
     "tpope/vim-fugitive",
-    cmd = { "Git", "G", "Gvdiffsplit" },
+    cmd = { "Git", "G", "Gvdiffsplit", "Gedit" },
   },
 
   {
@@ -183,9 +188,27 @@ return {
     dependencies = {
       {
         {
-          "rcarriga/nvim-dap-ui",
-          dependencies = { "nvim-neotest/nvim-nio" },
+          "igorlfs/nvim-dap-view",
+          opts = {
+            winbar = {
+              show = true,
+              sections = { "watches", "exceptions", "breakpoints", "threads", "repl" },
+              default_section = "breakpoints",
+            },
+            windows = {
+              height = 12,
+              terminal = {
+                position = "left",
+                hide = { "pwa-node" },
+                start_hidden = false,
+              },
+            },
+          },
         },
+        -- {
+        --   "rcarriga/nvim-dap-ui",
+        --   dependencies = { "nvim-neotest/nvim-nio" },
+        -- },
       },
       {
         "theHamsta/nvim-dap-virtual-text",
@@ -198,7 +221,17 @@ return {
   },
 
   {
+    "leoluz/nvim-dap-go",
+    ft = "go",
+    dependencies = {
+      "mfussenegger/nvim-dap",
+    },
+    opts = {},
+  },
+
+  {
     "folke/trouble.nvim",
+    event = "VeryLazy",
     cmd = { "TroubleToggle", "Trouble" },
     opts = function()
       return require "configs.trouble"
@@ -220,13 +253,6 @@ return {
     "stevearc/dressing.nvim",
     event = "VeryLazy",
     opts = {},
-  },
-
-  {
-    "Chaitanyabsprip/fastaction.nvim",
-    opts = function()
-      return require "configs.fastaction"
-    end,
   },
 
   {
@@ -306,7 +332,7 @@ return {
   {
     "mrcjkb/rustaceanvim",
     event = "VeryLazy",
-    version = "^5",
+    version = "^6",
     config = function()
       require "configs.rustaceanvim"
     end,
@@ -338,5 +364,40 @@ return {
       local opts = require "configs.diffview"
       require("diffview").setup(opts)
     end,
+  },
+  {
+    "utilyre/barbecue.nvim",
+    event = "VeryLazy",
+    version = "*",
+    dependencies = {
+      "SmiteshP/nvim-navic",
+      "nvim-tree/nvim-web-devicons", -- optional dependency
+    },
+    config = function()
+      require "configs.barbecue"
+    end,
+  },
+  {
+    "nvzone/typr",
+    dependencies = "nvzone/volt",
+    opts = {},
+    cmd = { "Typr", "TyprStats" },
+  },
+  {
+    "OXY2DEV/patterns.nvim",
+    cmd = { "Patterns" },
+  },
+  {
+    "kdheepak/lazygit.nvim",
+    cmd = {
+      "LazyGit",
+      "LazyGitConfig",
+      "LazyGitCurrentFile",
+      "LazyGitFilter",
+      "LazyGitFilterCurrentFile",
+    },
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+    },
   },
 }

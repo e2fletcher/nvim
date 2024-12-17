@@ -29,14 +29,17 @@ vim.api.nvim_create_autocmd("FileType", {
 
 return {
   formatters_by_ft = {
+    go = { "goimports", lsp_format = "last" },
+    python = { "black", lsp_format = "last" },
     lua = { "stylua" },
-    css = { "prettierd" },
-    json = { "prettierd" },
-    html = { "prettierd" },
-    typescript = { "prettierd" },
-    javascript = { "prettierd" },
-    typescriptreact = { "prettierd" },
-    javascriptreact = { "prettierd" },
+    css = { "eslint", "prettierd", stop_after_first = true },
+    json = { "jq" },
+    html = { "eslint", "prettierd", stop_after_first = true },
+    typescript = { "eslint", "prettierd", stop_after_first = true },
+    javascript = { "eslint", "prettierd", stop_after_first = true },
+    typescriptreact = { "eslint", "prettierd", stop_after_first = true },
+    javascriptreact = { "eslint", "prettierd", stop_after_first = true },
+    graphql = { "prettierd", stop_after_first = true },
   },
   format_on_save = function(bufnr)
     if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then

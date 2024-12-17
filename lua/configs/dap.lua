@@ -1,47 +1,23 @@
 dofile(vim.g.base46_cache .. "dap")
 
 vim.fn.sign_define("DapStopped", { text = "󰁖", texthl = "DapStopped" })
-vim.fn.sign_define("DapBreakpoint", { text = "󰯯", texthl = "DapBreakpoint" })
+vim.fn.sign_define("DapBreakpoint", { text = " ", texthl = "DapBreakpoint" })
 vim.fn.sign_define("DapBreakpointRejected", { text = "", texthl = "DapBreakpointCondition" })
 vim.fn.sign_define("DapBreakpointCondition", { text = "", texthl = "DapBreakpointCondition" })
 vim.fn.sign_define("DapLogPoint", { text = "", texthl = "DapLogPoint" })
 
-local dap = require "dap"
-local dapui = require "dapui"
-
-local dapui_config = {
-  layouts = {
-    {
-      elements = {
-        {
-          id = "scopes",
-          size = 0.25,
-        },
-        {
-          id = "breakpoints",
-          size = 0.25,
-        },
-        {
-          id = "watches",
-          size = 0.50,
-        },
-      },
-      position = "left",
-      size = 30,
-    },
-  },
-}
-
-dapui.setup(dapui_config)
-
-dap.listeners.after.event_initialized["dapui_config"] = function()
-  dapui.open {}
+local dap, dv = require "dap", require "dap-view"
+dap.listeners.before.attach["dap-view-config"] = function()
+  dv.open()
 end
-dap.listeners.before.event_terminated["dapui_config"] = function()
-  dapui.close {}
+dap.listeners.before.launch["dap-view-config"] = function()
+  dv.open()
 end
-dap.listeners.before.event_exited["dapui_config"] = function()
-  dapui.close {}
+dap.listeners.before.event_terminated["dap-view-config"] = function()
+  dv.close()
+end
+dap.listeners.before.event_exited["dap-view-config"] = function()
+  dv.close()
 end
 
 dap.adapters.codelldb = {
@@ -58,6 +34,8 @@ dap.adapters["chrome"] = {
   type = "executable",
   command = vim.fn.exepath "chrome-debug-adapter",
 }
+
+-- Golang
 
 local config_chrome_debug = {
   {

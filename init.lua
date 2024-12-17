@@ -27,3 +27,6 @@ end)
 dofile(vim.g.base46_cache .. "syntax")
 dofile(vim.g.base46_cache .. "defaults")
 dofile(vim.g.base46_cache .. "statusline")
+
+-- FIX: https://github.com/neovim/neovim/issues/31675
+vim.hl = vim.highlight

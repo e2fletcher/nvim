@@ -15,9 +15,7 @@ local on_attach = function(_, bufnr)
   map("n", "<leader>lr", function()
     require "nvchad.lsp.renamer"()
   end, opts "Rename current symbol")
-
-  map("n", "<leader>la", require("fastaction").code_action, opts "LSP Code action")
-  map("v", "<leader>la", require("fastaction").range_code_action, opts "LSP Code action")
+  map({ "n", "v" }, "<leader>la", vim.lsp.buf.code_action, opts "Code action")
   map("n", "gr", vim.lsp.buf.references, opts "Show references")
 end
 
@@ -70,6 +68,56 @@ require("lspconfig").lua_ls.setup {
         maxPreload = 100000,
         preloadFileSize = 10000,
       },
+    },
+  },
+}
+
+require("lspconfig").gopls.setup {
+  on_attach = on_attach,
+  capabilities = capabilities,
+  on_init = on_init,
+  settings = {
+    gopls = {
+      analyses = {
+        ST1003 = true,
+        fieldalignment = false,
+        fillreturns = true,
+        nilness = true,
+        nonewvars = true,
+        shadow = true,
+        undeclaredname = true,
+        unreachable = true,
+        unusedparams = true,
+        unusedwrite = true,
+        useany = true,
+      },
+      codelenses = {
+        gc_details = true, -- Show a code lens toggling the display of gc's choices.
+        generate = true, -- show the `go generate` lens.
+        regenerate_cgo = true,
+        test = true,
+        tidy = true,
+        upgrade_dependency = true,
+        vendor = true,
+      },
+      hints = {
+        assignVariableTypes = true,
+        compositeLiteralFields = true,
+        compositeLiteralTypes = true,
+        constantValues = true,
+        functionTypeParameters = true,
+        parameterNames = true,
+        rangeVariableTypes = true,
+      },
+      buildFlags = { "-tags", "integration" },
+      completeUnimported = true,
+      diagnosticsDelay = "500ms",
+      gofumpt = true,
+      matcher = "Fuzzy",
+      semanticTokens = true,
+      staticcheck = true,
+      symbolMatcher = "fuzzy",
+      usePlaceholders = true,
     },
   },
 }
@@ -131,9 +179,25 @@ require("lspconfig").vtsls.setup {
 }
 
 require("lspconfig").eslint.setup {
-  on_attach = on_attach,
+  on_attach = function(client, bufnr)
+    on_attach(client, bufnr)
+    vim.api.nvim_create_autocmd("BufWritePre", {
+      buffer = bufnr,
+      callback = function(event)
+        if vim.g.disable_autoformat or vim.b[event.buf].disable_autoformat then
+          return
+        end
+        vim.cmd "EslintFixAll"
+      end,
+    })
+  end,
   on_init = on_init,
   capabilities = capabilities,
+  settings = {
+    workingDirectories = { mode = "auto" },
+    useFlatConfig = false, -- WARNING: Error with projen projects config old format https://github.com/projen/projen/issues/3950
+    format = { enable = true },
+  },
 }
 
 require("lspconfig").html.setup {
@@ -162,6 +226,9 @@ require("lspconfig").clangd.setup {
 }
 
 require("lspconfig").basedpyright.setup {
+  on_attach = on_attach,
+  on_init = on_init,
+  capabilities = capabilities,
   before_init = function(_, c)
     if not c.settings then
       c.settings = {}
@@ -185,6 +252,108 @@ require("lspconfig").basedpyright.setup {
           reportOptionalSubscript = "none",
           reportPrivateImportUsage = "none",
         },
+      },
+    },
+  },
+}
+
+require("lspconfig").tailwindcss.setup {
+  on_attach = on_attach,
+  capabilities = capabilities,
+  root_dir = function(fname)
+    local root_pattern = require("lspconfig").util.root_pattern
+
+    -- First, check for common Tailwind config files
+    local root = root_pattern(
+      "tailwind.config.mjs",
+      "tailwind.config.cjs",
+      "tailwind.config.js",
+      "tailwind.config.ts",
+      "postcss.config.js",
+      "config/tailwind.config.js",
+      "assets/tailwind.config.js"
+    )(fname)
+    -- If not found, check for package.json dependencies
+    if not root then
+      local package_root = root_pattern "package.json"(fname)
+      if package_root then
+        local package_data = require("utils").decode_json_file(package_root .. "/package.json")
+        if
+          package_data
+          and (
+            require("utils").has_nested_key(package_data, "dependencies", "tailwindcss")
+            or require("utils").has_nested_key(package_data, "devDependencies", "tailwindcss")
+          )
+        then
+          root = package_root
+        end
+      end
+    end
+    return root
+  end,
+}
+
+require("lspconfig").emmet_ls.setup {
+  on_attach = on_attach,
+  capabilities = capabilities,
+  filetypes = {
+    "css",
+    "eruby",
+    "html",
+    "javascript",
+    "javascriptreact",
+    "less",
+    "sass",
+    "scss",
+    "svelte",
+    "pug",
+    "typescriptreact",
+    "vue",
+  },
+  init_options = {
+    html = {
+      options = {
+        -- For possible options, see: https://github.com/emmetio/emmet/blob/master/src/config.ts#L79-L267
+        ["bem.enabled"] = true,
+      },
+    },
+  },
+}
+
+-- GraphQL
+require("lspconfig").graphql.setup {
+  on_attach = on_attach,
+  capabilities = capabilities,
+  on_init = on_init,
+  settings = {
+    graphql = {
+      validate = true,
+      validateAll = true,
+      lint = true,
+      completion = true,
+      completionType = "schema",
+      schema = {
+        [".graphql"] = "graphql-config-raw",
+        [".graphqlconfig"] = "graphql-config",
+        [".gql"] = "graphql-config-raw",
+        [".gqlconfig"] = "graphql-config",
+      },
+      -- experimental: Enable experimental features
+      experimental = {
+        -- Enable experimental schema validation
+        schemaValidation = true,
+        -- Enable experimental fragment autocompletion
+        fragmentAutocompletion = true,
+        -- Enable experimental query autocompletion
+        queryAutocompletion = true,
+        -- Enable experimental validation for queries
+        queryValidation = true,
+      },
+      extensions = {
+        [".graphql"] = "graphql",
+        [".graphqlconfig"] = "json",
+        [".gql"] = "graphql",
+        [".gqlconfig"] = "json",
       },
     },
   },

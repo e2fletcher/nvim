@@ -1,3 +1,5 @@
+require("nvchad.lsp").diagnostic_config()
+
 vim.g.rustaceanvim = {
   -- Plugin configuration
   tools = {
@@ -8,8 +10,15 @@ vim.g.rustaceanvim = {
   -- LSP configuration
   server = {
     default_settings = {
-      -- rust-analyzer language server configuration
-      ["rust-analyzer"] = {},
+      ["rust-analyzer"] = {
+        check = {
+          command = "clippy",
+          extraArgs = {
+            "--no-deps",
+          },
+        },
+      },
+      -- Enables the use of cargo-watch for faster compilation and running
     },
   },
   -- DAP configuration

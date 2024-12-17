@@ -1,3 +1,13 @@
+vim.g.rest_nvim = {
+  ui = {
+    winbar = true,
+    keybinds = {
+      prev = "<S-Tab>",
+      next = "<Tab>",
+    },
+  },
+}
+
 vim.api.nvim_create_autocmd("FileType", {
   pattern = {
     "http",

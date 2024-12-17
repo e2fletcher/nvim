@@ -24,6 +24,10 @@ vim.api.nvim_create_autocmd("User", {
     map_split(buf_id, "<c-s>", "belowright vertical")
     map_split(buf_id, "<c-x>", "belowright horizontal")
     vim.keymap.set("n", "<esc>", files.close, { buffer = buf_id, desc = "Close explorer" })
+    vim.keymap.set("i", "<C-h>", "<Left>", { buffer = buf_id })
+    vim.keymap.set("i", "<C-j>", "<Down>", { buffer = buf_id })
+    vim.keymap.set("i", "<C-k>", "<Up>", { buffer = buf_id })
+    vim.keymap.set("i", "<C-l>", "<Right>", { buffer = buf_id })
   end,
 })
 

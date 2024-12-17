@@ -38,31 +38,6 @@ function M.background(silent)
   ui_notify(silent, ("background=%s"):format(vim.go.background))
 end
 
---- Toggle cmp entrirely
----@param silent? boolean if true then don't sent a notification
-function M.cmp(silent)
-  local features = assert(require("astrocore").config.features)
-  features.cmp = not features.cmp
-  local ok, _ = pcall(require, "cmp")
-  ui_notify(silent, ok and ("Global completion %s"):format(bool2str(features.cmp)) or "completion not available")
-end
-
---- Toggle buffer local cmp
----@param bufnr? integer the buffer to toggle cmp completion on
----@param silent? boolean if true then don't sent a notification
-function M.buffer_cmp(bufnr, silent)
-  bufnr = (bufnr and bufnr ~= 0) and bufnr or vim.api.nvim_win_get_buf(0)
-  if vim.b[bufnr].cmp_enabled == nil then
-    vim.b[bufnr].cmp_enabled = require("astrocore").config.features.cmp
-  end
-  vim.b[bufnr].cmp_enabled = not vim.b[bufnr].cmp_enabled
-  local ok, _ = pcall(require, "cmp")
-  ui_notify(
-    silent,
-    ok and ("Buffer completion %s"):format(bool2str(vim.b[bufnr].cmp_enabled)) or "completion not available"
-  )
-end
-
 --- Toggle showtabline=2|0
 ---@param silent? boolean if true then don't sent a notification
 function M.tabline(silent)
@@ -229,6 +204,23 @@ function M.diagnostics(silent)
   else
     ui_notify(silent, "all diagnostics on")
   end
+end
+
+function M.decode_json_file(filename)
+  local file = io.open(filename, "r")
+  if file then
+    local content = file:read "*all"
+    file:close()
+
+    local ok, data = pcall(vim.fn.json_decode, content)
+    if ok and type(data) == "table" then
+      return data
+    end
+  end
+end
+
+function M.has_nested_key(json, ...)
+  return vim.tbl_get(json, ...) ~= nil
 end
 
 return M

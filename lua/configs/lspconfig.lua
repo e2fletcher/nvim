@@ -54,10 +54,10 @@ capabilities.textDocument.completion.completionItem = {
 
 require("nvchad.lsp").diagnostic_config()
 
-require("lspconfig").lua_ls.setup {
-  on_attach = on_attach,
-  capabilities = capabilities,
-  on_init = on_init,
+vim.lsp.config("*", { capabilities = capabilities, on_init = on_init })
+
+-- lua
+vim.lsp.config("lua_ls", {
   settings = {
     Lua = {
       diagnostics = {
@@ -66,22 +66,17 @@ require("lspconfig").lua_ls.setup {
       workspace = {
         library = {
           vim.fn.expand "$VIMRUNTIME/lua",
-          vim.fn.expand "$VIMRUNTIME/lua/vim/lsp",
           vim.fn.stdpath "data" .. "/lazy/ui/nvchad_types",
           vim.fn.stdpath "data" .. "/lazy/lazy.nvim/lua/lazy",
           "${3rd}/luv/library",
         },
-        maxPreload = 100000,
-        preloadFileSize = 10000,
       },
     },
   },
-}
+})
 
-require("lspconfig").rust_analyzer.setup {
-  on_attach = on_attach,
-  capabilities = capabilities,
-  on_init = on_init,
+-- rust
+vim.lsp.config("rust_analyzer", {
   settings = {
     ["rust-analyzer"] = {
       checkOnSave = {
@@ -98,12 +93,10 @@ require("lspconfig").rust_analyzer.setup {
       },
     },
   },
-}
+})
 
-require("lspconfig").gopls.setup {
-  on_attach = on_attach,
-  capabilities = capabilities,
-  on_init = on_init,
+-- go
+vim.lsp.config("gopls", {
   settings = {
     gopls = {
       analyses = {
@@ -148,12 +141,10 @@ require("lspconfig").gopls.setup {
       usePlaceholders = true,
     },
   },
-}
+})
 
-require("lspconfig").jsonls.setup {
-  on_attach = on_attach,
-  on_init = on_init,
-  capabilities = capabilities,
+-- json
+vim.lsp.config("jsonls", {
   on_new_config = function(config)
     if not config.settings.json.schemas then
       config.settings.json.schemas = {}
@@ -161,22 +152,21 @@ require("lspconfig").jsonls.setup {
     vim.list_extend(config.settings.json.schemas, require("schemastore").json.schemas())
   end,
   settings = { json = { validate = { enable = true } } },
-}
+})
 
-require("lspconfig").yamlls.setup {
-  on_attach = on_attach,
-  on_init = on_init,
-  capabilities = capabilities,
+-- yaml
+vim.lsp.config("yamlls", {
   on_new_config = function(config)
     config.settings.yaml.schemas =
       vim.tbl_deep_extend("force", config.settings.yaml.schemas or {}, require("schemastore").yaml.schemas())
   end,
   settings = { yaml = { schemaStore = { enable = false, url = "" } } },
-}
+})
 
 require("lspconfig.configs").vtsls = require("vtsls").lspconfig
-require("lspconfig").vtsls.setup {
-  on_attach = on_attach,
+
+-- typescript
+vim.lsp.config("vtsls", {
   settings = {
     typescript = {
       updateImportsOnFileMove = { enabled = "always" },
@@ -204,9 +194,10 @@ require("lspconfig").vtsls.setup {
       enableMoveToFileCodeAction = true,
     },
   },
-}
+})
 
-require("lspconfig").eslint.setup {
+-- eslint
+vim.lsp.config("eslint", {
   on_attach = function(client, bufnr)
     on_attach(client, bufnr)
     vim.api.nvim_create_autocmd("BufWritePre", {
@@ -226,23 +217,10 @@ require("lspconfig").eslint.setup {
     useFlatConfig = false, -- WARNING: Error with projen projects config old format https://github.com/projen/projen/issues/3950
     format = { enable = true },
   },
-}
+})
 
-require("lspconfig").html.setup {
-  on_attach = on_attach,
-  on_init = on_init,
-  capabilities = capabilities,
-}
-
-require("lspconfig").cssls.setup {
-  on_attach = on_attach,
-  on_init = on_init,
-  capabilities = capabilities,
-}
-
-require("lspconfig").clangd.setup {
-  on_init = on_init,
-  on_attach = on_attach,
+-- c and c++
+vim.lsp.config("clangd", {
   capabilities = vim.tbl_extend("force", capabilities, {
     offsetEncoding = { "utf-8", "utf-16" },
     textDocument = {
@@ -251,12 +229,9 @@ require("lspconfig").clangd.setup {
       },
     },
   }),
-}
+})
 
-require("lspconfig").basedpyright.setup {
-  on_attach = on_attach,
-  on_init = on_init,
-  capabilities = capabilities,
+vim.lsp.config("basedpyright", {
   before_init = function(_, c)
     if not c.settings then
       c.settings = {}
@@ -283,11 +258,9 @@ require("lspconfig").basedpyright.setup {
       },
     },
   },
-}
+})
 
-require("lspconfig").tailwindcss.setup {
-  on_attach = on_attach,
-  capabilities = capabilities,
+vim.lsp.config("tailwindcss", {
   root_dir = function(fname)
     local root_pattern = require("lspconfig").util.root_pattern
 
@@ -319,11 +292,9 @@ require("lspconfig").tailwindcss.setup {
     end
     return root
   end,
-}
+})
 
-require("lspconfig").emmet_ls.setup {
-  on_attach = on_attach,
-  capabilities = capabilities,
+vim.lsp.config("emmet_ls", {
   filetypes = {
     "css",
     "eruby",
@@ -346,13 +317,10 @@ require("lspconfig").emmet_ls.setup {
       },
     },
   },
-}
+})
 
 -- GraphQL
-require("lspconfig").graphql.setup {
-  on_attach = on_attach,
-  capabilities = capabilities,
-  on_init = on_init,
+vim.lsp.config("graphql", {
   settings = {
     graphql = {
       validate = true,
@@ -385,4 +353,21 @@ require("lspconfig").graphql.setup {
       },
     },
   },
+})
+
+vim.lsp.enable {
+  "lua_ls",
+  "rust_analyzer",
+  "gopls",
+  "jsonls",
+  "yamlls",
+  "vtsls",
+  "eslint",
+  "clangd",
+  "basedpyright",
+  "tailwindcss",
+  "emmet_ls",
+  "graphql",
+  "html",
+  "cssls",
 }
